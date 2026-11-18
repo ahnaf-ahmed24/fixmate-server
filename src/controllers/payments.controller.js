@@ -19,15 +19,15 @@ async function savePayment(session) {
   }
 
   const existing = await payments.findOne({ stripeSessionId: session.id });
-  if (existing) return existing;
+  if (existing) {
+    await markBookingPaid(bookings, booking);
+    return existing;
+  }
 
   const byBooking = await payments.findOne({ bookingId });
   if (byBooking) {
-
-    await bookings.updateOne(
-      { _id: booking._id, paymentStatus: { $ne: 'paid' } },
-      { $set: { paymentStatus: 'paid', updatedAt: new Date() } }
-    );
+    // Payment already recorded earlier — just make sure the booking reflects it.
+    await markBookingPaid(bookings, booking);
     return byBooking;
   }
 
@@ -51,17 +51,29 @@ async function savePayment(session) {
   } catch (err) {
     if (err && err.code === 11000) {
 
+      await markBookingPaid(bookings, booking);
       return payments.findOne({ stripeSessionId: session.id });
     }
     throw err;
   }
 
-  await bookings.updateOne(
-    { _id: booking._id, paymentStatus: { $ne: 'paid' } },
-    { $set: { paymentStatus: 'paid', updatedAt: new Date() } }
-  );
+  await markBookingPaid(bookings, booking);
 
   return doc;
+}
+
+/** Stripe confirmed the money → the booking becomes `paid` (terminal pipeline state). */
+async function markBookingPaid(bookings, booking) {
+  const now = new Date();
+  const $set = { paymentStatus: 'paid', updatedAt: now };
+  if (booking.status !== 'paid') {
+    $set.status = 'paid';
+    return bookings.updateOne(
+      { _id: booking._id },
+      { $set, $push: { statusHistory: { status: 'paid', changedAt: now } } }
+    );
+  }
+  return bookings.updateOne({ _id: booking._id }, { $set });
 }
 
 async function createCheckoutSession(req, res) {
@@ -130,9 +142,16 @@ async function verifyCheckout(req, res) {
     return fail(res, 404, 'Stripe session not found');
   }
 
-  const metaEmail = session.metadata?.customerEmail;
-  if (metaEmail && metaEmail !== req.user.email) {
-    return fail(res, 403, 'Forbidden');
+  // Ownership: the checkout session's booking must belong to the logged-in customer.
+  const { bookings } = collections();
+  const metaBookingId = session.metadata?.bookingId;
+  const booking = metaBookingId ? await bookings.findOne({ _id: oid(metaBookingId) }) : null;
+  if (booking) {
+    if (booking.customerEmail !== req.user.email) {
+      return fail(res, 403, 'Forbidden: you can only verify payments for your own bookings');
+    }
+  } else if (session.metadata?.customerEmail !== req.user.email) {
+    return fail(res, 403, 'Forbidden: this checkout session does not belong to you');
   }
 
   if (session.payment_status !== 'paid') {

@@ -35,6 +35,7 @@ const BOOKING_STATUSES = [
   'rejected',
   'in-progress',
   'completed',
+  'paid',
   'cancelled',
 ];
 

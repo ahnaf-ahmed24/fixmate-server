@@ -7,13 +7,14 @@ const env = require('./config/env');
 const { connectDb } = require('./config/db');
 const { getAuth } = require('./lib/auth');
 const paymentsController = require('./controllers/payments.controller');
-const { notFound, errorHandler } = require('./middlewares/error.middleware');
+const { notFound, errorHandler, asyncHandler } = require('./middlewares/error.middleware');
 
 const servicesRoutes = require('./routes/services.routes');
 const bookingsRoutes = require('./routes/bookings.routes');
 const paymentsRoutes = require('./routes/payments.routes');
 const adminRoutes = require('./routes/admin.routes');
 const usersRoutes = require('./routes/users.routes');
+const uploadsRoutes = require('./routes/uploads.routes');
 
 async function main() {
   env.assertSecrets();
@@ -22,14 +23,20 @@ async function main() {
   const app = express();
   app.set('trust proxy', 1); 
 
-  app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), paymentsController.stripeWebhook);
+  app.post(
+    '/api/payments/webhook',
+    express.raw({ type: 'application/json' }),
+    asyncHandler(paymentsController.stripeWebhook)
+  );
 
 
   app.use(
     cors({
       origin: (origin, cb) => {
+        // No Origin (curl / same-origin) or an allowed origin → let through.
+        // Disallowed origins get no CORS headers instead of a noisy 500.
         if (!origin || env.corsOrigins.includes(origin)) return cb(null, true);
-        return cb(new Error(`CORS blocked for origin: ${origin}`));
+        return cb(null, false);
       },
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -55,6 +62,7 @@ async function main() {
   app.use('/api/payments', paymentsRoutes);
   app.use('/api/admin', adminRoutes);
   app.use('/api/users', usersRoutes);
+  app.use('/api/uploads', uploadsRoutes);
 
   app.use(notFound);
   app.use(errorHandler);

@@ -8,7 +8,7 @@ async function customerStats(req, res) {
   const [totalRequests, activeJobs, completedJobs, spentAgg] = await Promise.all([
     bookings.countDocuments({ customerEmail: email }),
     bookings.countDocuments({ customerEmail: email, status: { $in: ACTIVE_STATUSES } }),
-    bookings.countDocuments({ customerEmail: email, status: 'completed' }),
+    bookings.countDocuments({ customerEmail: email, status: { $in: ['completed', 'paid'] } }),
     payments.aggregate([
       { $match: { customerEmail: email } },
       { $group: { _id: null, total: { $sum: '$amount' } } },
@@ -36,7 +36,7 @@ async function technicianStats(req, res) {
       services.countDocuments({ technicianEmail: email, approvalStatus: 'approved' }),
       bookings.countDocuments({ technicianEmail: email, status: 'requested' }),
       bookings.countDocuments({ technicianEmail: email, status: 'in-progress' }),
-      bookings.countDocuments({ technicianEmail: email, status: 'completed' }),
+      bookings.countDocuments({ technicianEmail: email, status: { $in: ['completed', 'paid'] } }),
       payments.aggregate([
         { $match: { technicianEmail: email } },
         { $group: { _id: null, total: { $sum: '$amount' } } },

@@ -89,16 +89,29 @@ async function upsertUser(auth, { name, email, password, role, phone, area, bio 
 }
 
 async function main() {
+  const fresh = process.argv.includes('--fresh');
   await connectDb();
-  const { users, services, bookings, payments } = collections();
-  const auth = getAuth();
+  const { users, sessions, accounts, verifications, jwks, services, bookings, payments } = collections();
+
+  if (fresh) {
+    console.log('[seed] --fresh: wiping users, auth sessions and jwks…');
+    await Promise.all([
+      users.deleteMany({}),
+      sessions.deleteMany({}),
+      accounts.deleteMany({}),
+      verifications.deleteMany({}),
+      jwks.deleteMany({}),
+    ]);
+  }
 
   const admin = await users.findOne({ email: ADMIN.email });
   if (admin && admin.role === 'admin') {
-    console.log('[seed] Seed data already exists — skipping. (Reset the database to re-seed.)');
+    console.log('[seed] Seed data already exists — skipping. (Run "npm run seed:fresh" to re-seed.)');
     await disconnectDb();
-    return;
+    process.exit(0);
   }
+
+  const auth = getAuth();
 
   console.log('[seed] creating users…');
   const adminUser = await upsertUser(auth, { ...ADMIN, role: 'admin' });
@@ -309,9 +322,21 @@ async function main() {
       paidAt: new Date(now - day * 7.8),
     },
   ]);
-  // mark those bookings paid + history Paid marker
-  await bookings.updateOne({ _id: ids[3] }, { $set: { paymentStatus: 'paid' } });
-  await bookings.updateOne({ _id: ids[4] }, { $set: { paymentStatus: 'paid' } });
+  // Paid is the terminal pipeline state — status + paymentStatus + a history marker
+  await bookings.updateOne(
+    { _id: ids[3] },
+    {
+      $set: { paymentStatus: 'paid', status: 'paid', updatedAt: new Date(now - day * 4.8) },
+      $push: { statusHistory: { status: 'paid', changedAt: new Date(now - day * 4.8) } },
+    }
+  );
+  await bookings.updateOne(
+    { _id: ids[4] },
+    {
+      $set: { paymentStatus: 'paid', status: 'paid', updatedAt: new Date(now - day * 7.8) },
+      $push: { statusHistory: { status: 'paid', changedAt: new Date(now - day * 7.8) } },
+    }
+  );
   console.log('[seed] 2 payments created (revenue ready for the admin dashboard)');
 
   console.log('\n==================== TEST ACCOUNTS ====================');
