@@ -39,12 +39,39 @@ async function createApp() {
     })
   );
 
-  const { toNodeHandler } = await import('better-auth/node');
-  const authHandler = toNodeHandler(await getAuth());
+  const auth = await getAuth();
   console.log('[app] mounted /api/auth handler');
-  app.use('/api/auth', (req, res, next) => {
+
+  // BetterAuth exposes a fetch-compatible handler at .handler.
+  // Wrap it as Express middleware to avoid toNodeHandler compatibility
+  // issues on Vercel's serverless runtime.
+  app.use('/api/auth', async (req, res, next) => {
     console.log('[app] /api/auth request:', req.method, req.url);
-    return authHandler(req, res).catch(next);
+    try {
+      const headers = {};
+      for (const [key, value] of Object.entries(req.headers)) {
+        headers[key] = Array.isArray(value) ? value.join(', ') : value;
+      }
+
+      const request = new Request(`${env.BETTER_AUTH_URL}${req.url}`, {
+        method: req.method,
+        headers,
+        body: ['GET', 'HEAD'].includes(req.method) ? undefined : req,
+      });
+
+      const response = await auth.handler(request);
+
+      res.status(response.status);
+      response.headers.forEach((value, key) => {
+        res.setHeader(key, value);
+      });
+
+      const body = await response.arrayBuffer();
+      res.send(Buffer.from(body));
+    } catch (err) {
+      console.error('[app] auth handler error:', err.message);
+      next(err);
+    }
   });
 
   app.use(express.json({ limit: '2mb' }));
