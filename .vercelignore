@@ -1,0 +1,13 @@
+# Never ship secrets or local-only files to Vercel
+.env
+.env.*
+!.env.example
+node_modules
+.git
+.vercel
+scripts
+booking-backup.json
+payments-count.txt
+tmp-restore.js
+PLAN.md
+README.md

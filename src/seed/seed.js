@@ -52,10 +52,10 @@ const SERVICES = [
   { t: 'Desktop PC Build & Upgrade', c: 'Laptop & PC', d: 'SSD/RAM upgrades, custom build assembly, cable management and BIOS optimization for gaming or office desktops.', i: img('photo-1587831990711-23ca6441447b'), p: 35, dur: '3-4 hours', m: 'Home Visit', a: 'Dhanmondi & nearby areas' },
   { t: 'TV Panel & Backlight Repair', c: 'TV', d: 'LED/LCD backlight strip replacement, panel diagnosis and motherboard-level repair with a picture-quality guarantee.', i: img('photo-1593359677879-a4bb92f829d1'), p: 40, dur: '1 day', m: 'Home Visit', a: 'Dhanmondi, Dhaka' },
   
-  { t: 'AC Deep Cleaning & Gas Refill', c: 'AC', d: 'Full indoor/outdoor unit wash, jet-spray coil cleaning, drain flushing, gas pressure check and top-up for split ACs.', i: img('photo-1631545806609-5b4b3c36a1c4'), p: 28, dur: '2-3 hours', m: 'Home Visit', a: 'Mirpur, Dhaka' },
+  { t: 'AC Deep Cleaning & Gas Refill', c: 'AC', d: 'Full indoor/outdoor unit wash, jet-spray coil cleaning, drain flushing, gas pressure check and top-up for split ACs.', i: 'https://images.pexels.com/photos/5463587/pexels-photo-5463587.jpeg?auto=compress&cs=tinysrgb&w=900', p: 28, dur: '2-3 hours', m: 'Home Visit', a: 'Mirpur, Dhaka' },
   { t: 'AC Installation & Uninstallation', c: 'AC', d: 'Professional split-AC install or removal with proper wall mounting, copper pipe fitting, vacuuming and leak testing.', i: img('photo-1621905252507-b35492cc74b4'), p: 50, dur: '2-3 hours', m: 'Home Visit', a: 'Mirpur, Dhaka' },
   { t: 'Refrigerator Compressor & Cooling Repair', c: 'Refrigerator', d: 'No-cooling and over-freezing fixes: compressor service, gas refilling, thermostat replacement and drain cleaning.', i: img('photo-1571175443880-49e1d25b2bc5'), p: 38, dur: '1 day', m: 'Home Visit', a: 'Mirpur, Dhaka' },
-  { t: 'Washing Machine Repair & Servicing', c: 'Washing Machine', d: 'Drum noise, drainage, spinning and vibration issues fixed — belt, bearing, inlet valve and pump repair for all brands.', i: img('photo-1624704167489-bb1f5b4d6bd3'), p: 26, dur: '2-3 hours', m: 'Home Visit', a: 'Mirpur, Dhaka' },
+  { t: 'Washing Machine Repair & Servicing', c: 'Washing Machine', d: 'Drum noise, drainage, spinning and vibration issues fixed — belt, bearing, inlet valve and pump repair for all brands.', i: 'https://images.pexels.com/photos/4700400/pexels-photo-4700400.jpeg?auto=compress&cs=tinysrgb&w=900', p: 26, dur: '2-3 hours', m: 'Home Visit', a: 'Mirpur, Dhaka' },
   { t: 'Microwave Oven Repair', c: 'Washing Machine', d: '', hidden: true },
   { t: 'House Electrical Wiring & Safety Check', c: 'Electrical', d: 'Complete house wiring inspection, socket/switch replacement, breaker upgrades and earthing safety correction.', i: img('photo-1621905251918-48416bd8575a'), p: 22, dur: '3-4 hours', m: 'Home Visit', a: 'Mirpur & nearby areas' },
   { t: 'Ceiling Fan & Light Fixture Installation', c: 'Electrical', d: 'Fan mounting, speed-controller wiring, chandelier and panel light installation with secure load testing.', i: img('photo-1565814329452-e1efa11c5b89'), p: 15, dur: '1-2 hours', m: 'Home Visit', a: 'Mirpur, Dhaka' },
@@ -111,7 +111,7 @@ async function main() {
     process.exit(0);
   }
 
-  const auth = getAuth();
+  const auth = await getAuth();
 
   console.log('[seed] creating users…');
   const adminUser = await upsertUser(auth, { ...ADMIN, role: 'admin' });

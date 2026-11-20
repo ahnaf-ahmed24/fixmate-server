@@ -1,15 +1,20 @@
-const { betterAuth } = require('better-auth');
-const { mongodbAdapter } = require('better-auth/adapters/mongodb');
-const { jwt } = require('better-auth/plugins');
-const { createAuthMiddleware, APIError } = require('better-auth/api');
 const { getDb } = require('../config/db');
 const env = require('../config/env');
 
 let _auth = null;
 
-
-function getAuth() {
+async function getAuth() {
   if (_auth) return _auth;
+
+  const betterAuthModule = await import('better-auth');
+  const adaptersModule = await import('better-auth/adapters/mongodb');
+  const pluginsModule = await import('better-auth/plugins');
+  const apiModule = await import('better-auth/api');
+
+  const betterAuth = betterAuthModule.betterAuth;
+  const mongodbAdapter = adaptersModule.mongodbAdapter;
+  const jwt = pluginsModule.jwt;
+  const { createAuthMiddleware, APIError } = apiModule;
 
   _auth = betterAuth({
     appName: 'FixMate',

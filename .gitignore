@@ -25,3 +25,6 @@ coverage/
 
 PLAN.md
 README.md
+
+.vercel
+.env*
