@@ -40,7 +40,12 @@ async function createApp() {
   );
 
   const { toNodeHandler } = await import('better-auth/node');
-  app.use('/api/auth', toNodeHandler(await getAuth()));
+  const authHandler = toNodeHandler(await getAuth());
+  console.log('[app] mounted /api/auth handler');
+  app.use('/api/auth', (req, res, next) => {
+    console.log('[app] /api/auth request:', req.method, req.url);
+    return authHandler(req, res).catch(next);
+  });
 
   app.use(express.json({ limit: '2mb' }));
 
