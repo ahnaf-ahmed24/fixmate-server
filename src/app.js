@@ -53,10 +53,18 @@ async function createApp() {
         headers[key] = Array.isArray(value) ? value.join(', ') : value;
       }
 
+      // Buffer the request body so it can be passed to fetch Request
+      let body = null;
+      if (!['GET', 'HEAD'].includes(req.method)) {
+        const chunks = [];
+        for await (const chunk of req) chunks.push(chunk);
+        body = Buffer.concat(chunks);
+      }
+
       const request = new Request(`${env.BETTER_AUTH_URL}${req.url}`, {
         method: req.method,
         headers,
-        body: ['GET', 'HEAD'].includes(req.method) ? undefined : req,
+        body,
       });
 
       const response = await auth.handler(request);
@@ -66,8 +74,8 @@ async function createApp() {
         res.setHeader(key, value);
       });
 
-      const body = await response.arrayBuffer();
-      res.send(Buffer.from(body));
+      const bodyBuf = await response.arrayBuffer();
+      res.send(Buffer.from(bodyBuf));
     } catch (err) {
       console.error('[app] auth handler error:', err.message);
       next(err);
