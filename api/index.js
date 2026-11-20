@@ -1,29 +1,34 @@
 const { connectDb } = require('../src/config/db');
 const env = require('../src/config/env');
 
-let appPromise = null;
+let app = null;
+let initializing = false;
+let initPromise = null;
 
 async function getApp() {
-  if (!appPromise) {
-    appPromise = (async () => {
-      env.assertSecrets();
-      await connectDb();
-      const { createApp } = require('../src/app');
-      return createApp();
-    })().catch((err) => {
-      appPromise = null;
-      throw err;
-    });
-  }
-  return appPromise;
+  if (app) return app;
+  if (initPromise) return initPromise;
+
+  initializing = true;
+  initPromise = (async () => {
+    env.assertSecrets();
+    await connectDb();
+    const { createApp } = require('../src/app');
+    app = await createApp();
+    return app;
+  })().finally(() => {
+    initializing = false;
+  });
+
+  return initPromise;
 }
 
 module.exports = async (req, res) => {
   try {
-    const app = await getApp();
-    return app(req, res);
+    const a = await getApp();
+    return a(req, res);
   } catch (err) {
     console.error('[api] error:', err.message);
-    return res.status(500).json({ error: err.message, stack: err.stack });
+    return res.status(500).json({ error: err.message });
   }
 };
