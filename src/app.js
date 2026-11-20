@@ -42,6 +42,8 @@ async function createApp() {
   const auth = await getAuth();
   console.log('[app] mounted /api/auth handler');
 
+  app.get('/api/auth/test', (_req, res) => res.json({ ok: true }));
+
   // BetterAuth exposes a fetch-compatible handler at .handler.
   // Wrap it as Express middleware to avoid toNodeHandler compatibility
   // issues on Vercel's serverless runtime.
