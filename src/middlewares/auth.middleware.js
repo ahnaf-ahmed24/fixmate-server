@@ -1,16 +1,21 @@
-const { createRemoteJWKSet, jwtVerify } = require('jose');
 const { collections, userFilter } = require('../utils/helpers');
 const env = require('../config/env');
 
-
+let jose = null;
 let jwks = null;
-function getJwks() {
+
+async function getJose() {
+  if (!jose) jose = await import('jose');
+  return jose;
+}
+
+async function getJwks() {
   if (!jwks) {
+    const { createRemoteJWKSet } = await getJose();
     jwks = createRemoteJWKSet(new URL(`${env.BETTER_AUTH_URL}/api/auth/jwks`));
   }
   return jwks;
 }
-
 
 async function verifyToken(req, res, next) {
   try {
@@ -24,7 +29,8 @@ async function verifyToken(req, res, next) {
 
     let payload;
     try {
-      ({ payload } = await jwtVerify(token, getJwks(), {
+      const { jwtVerify } = await getJose();
+      ({ payload } = await jwtVerify(token, await getJwks(), {
         issuer: env.JWT_ISSUER,
         audience: env.JWT_AUDIENCE,
       }));
@@ -51,7 +57,6 @@ async function verifyToken(req, res, next) {
     next(err);
   }
 }
-
 
 const requireRole =
   (...roles) =>
