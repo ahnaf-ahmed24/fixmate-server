@@ -1,6 +1,6 @@
-const { ObjectId } = require('mongodb');
-const { collections } = require('../config/db');
-const env = require('../config/env');
+import { ObjectId } from 'mongodb';
+import { collections } from '../config/db.js';
+import env from '../config/env.js';
 
 const oid = (id) => {
   try {
@@ -56,7 +56,7 @@ const ok = (res, data = {}, status = 200) => res.status(status).json({ success: 
 const fail = (res, status, message, extra = {}) =>
   res.status(status).json({ success: false, message, ...extra });
 
-module.exports = {
+export {
   oid,
   userFilter,
   escapeRegex,

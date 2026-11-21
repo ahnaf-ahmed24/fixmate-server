@@ -1,7 +1,9 @@
-const router = require('express').Router();
-const c = require('../controllers/bookings.controller');
-const { verifyToken, verifyCustomer, verifyTechnician } = require('../middlewares/auth.middleware');
-const { asyncHandler } = require('../middlewares/error.middleware');
+import express from 'express';
+import * as c from '../controllers/bookings.controller.js';
+import { verifyToken, verifyCustomer, verifyTechnician } from '../middlewares/auth.middleware.js';
+import { asyncHandler } from '../middlewares/error.middleware.js';
+
+const router = express.Router();
 
 
 router.post('/', verifyToken, verifyCustomer, asyncHandler(c.createBooking));
@@ -15,4 +17,4 @@ router.patch('/:id/status', verifyToken, verifyTechnician, asyncHandler(c.update
 
 router.get('/:id', verifyToken, asyncHandler(c.getBookingById));
 
-module.exports = router;
+export default router;

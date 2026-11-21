@@ -1,6 +1,6 @@
-const Stripe = require('stripe');
-const env = require('../config/env');
-const { ApiError } = require('../middlewares/error.middleware');
+import Stripe from 'stripe';
+import env from '../config/env.js';
+import { ApiError } from '../middlewares/error.middleware.js';
 
 let _stripe = null;
 
@@ -13,4 +13,4 @@ function getStripe() {
   return _stripe;
 }
 
-module.exports = { getStripe };
+export { getStripe };

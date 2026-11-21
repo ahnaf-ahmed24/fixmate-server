@@ -1,17 +1,17 @@
-const express = require('express');
-const cors = require('cors');
+import express from 'express';
+import cors from 'cors';
 
-const env = require('./config/env');
-const { getAuth } = require('./lib/auth');
-const paymentsController = require('./controllers/payments.controller');
-const { notFound, errorHandler, asyncHandler } = require('./middlewares/error.middleware');
+import env from './config/env.js';
+import { getAuth } from './lib/auth.js';
+import * as paymentsController from './controllers/payments.controller.js';
+import { notFound, errorHandler, asyncHandler } from './middlewares/error.middleware.js';
 
-const servicesRoutes = require('./routes/services.routes');
-const bookingsRoutes = require('./routes/bookings.routes');
-const paymentsRoutes = require('./routes/payments.routes');
-const adminRoutes = require('./routes/admin.routes');
-const usersRoutes = require('./routes/users.routes');
-const uploadsRoutes = require('./routes/uploads.routes');
+import servicesRoutes from './routes/services.routes.js';
+import bookingsRoutes from './routes/bookings.routes.js';
+import paymentsRoutes from './routes/payments.routes.js';
+import adminRoutes from './routes/admin.routes.js';
+import usersRoutes from './routes/users.routes.js';
+import uploadsRoutes from './routes/uploads.routes.js';
 
 
 async function createApp() {
@@ -71,4 +71,11 @@ async function createApp() {
   return app;
 }
 
-module.exports = { createApp };
+// Vercel auto-detects this file as the entry that serves "/" and "/index"
+// (it is the module that imports `express`), so it must ALSO default-export a
+// (req, res) handler. Without this the root path dies at boot with:
+//   Invalid export found in module "/var/task/src/app.js".
+// The handler is shared with api/index.js so both entries behave identically.
+export { default } from './handler.js';
+
+export { createApp };

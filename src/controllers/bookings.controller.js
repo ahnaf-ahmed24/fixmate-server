@@ -1,11 +1,11 @@
-const {
+import {
   oid,
   ok,
   fail,
   collections,
   startOfToday,
   BOOKING_STATUSES,
-} = require('../utils/helpers');
+} from '../utils/helpers.js';
 
 
 const TRANSITIONS = {
@@ -192,7 +192,7 @@ async function updateBookingStatus(req, res) {
   ok(res, { data: updated, message: `Job marked as ${next}` });
 }
 
-module.exports = {
+export {
   createBooking,
   getMyBookings,
   getTechnicianBookings,

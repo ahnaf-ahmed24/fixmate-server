@@ -1,4 +1,4 @@
-require('dotenv').config();
+import 'dotenv/config';
 
 const required = ['MONGODB_URI', 'BETTER_AUTH_SECRET'];
 
@@ -49,4 +49,4 @@ env.assertSecrets = function assertSecrets() {
   }
 };
 
-module.exports = env;
+export default env;

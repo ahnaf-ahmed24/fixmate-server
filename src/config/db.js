@@ -1,5 +1,5 @@
-const { MongoClient } = require('mongodb');
-const env = require('./env');
+import { MongoClient } from 'mongodb';
+import env from './env.js';
 
 let client = null;
 let db = null;
@@ -55,4 +55,4 @@ async function disconnectDb() {
   db = null;
 }
 
-module.exports = { connectDb, getDb, collections, disconnectDb, ensureIndexes };
+export { connectDb, getDb, collections, disconnectDb, ensureIndexes };

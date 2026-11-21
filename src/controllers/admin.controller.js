@@ -1,4 +1,4 @@
-const { oid, ok, fail, collections, userFilter, ROLES, BOOKING_STATUSES } = require('../utils/helpers');
+import { oid, ok, fail, collections, userFilter, ROLES, BOOKING_STATUSES } from '../utils/helpers.js';
 
 async function getStats(_req, res) {
   const { users, services, bookings, payments } = collections();
@@ -130,7 +130,7 @@ async function listAllPayments(_req, res) {
   ok(res, { data, totalRevenue: revenueAgg[0]?.total || 0 });
 }
 
-module.exports = {
+export {
   getStats,
   listUsers,
   updateUserRole,

@@ -1,5 +1,5 @@
-require('dotenv').config();
-const { MongoClient } = require('mongodb');
+import 'dotenv/config';
+import { MongoClient, ObjectId } from 'mongodb';
 
 const BASE = process.env.LIVE_TEST_BASE || 'http://localhost:5000';
 const ORIGIN = process.env.CLIENT_URL || 'http://localhost:3000';
@@ -202,7 +202,7 @@ async function main() {
   const out = await client
     .db(process.env.DB_NAME || 'fixmate')
     .collection('bookings')
-    .deleteMany({ _id: { $in: ids.map((id) => require('mongodb').ObjectId.isValid(id) ? new (require('mongodb').ObjectId)(id) : id) } });
+    .deleteMany({ _id: { $in: ids.map((id) => (ObjectId.isValid(id) ? new ObjectId(id) : id)) } });
   await client.close();
   console.log(`\n[cleanup] removed ${out.deletedCount} test booking(s)`);
 

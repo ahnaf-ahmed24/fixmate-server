@@ -1,6 +1,8 @@
+import 'dotenv/config';
+import { createRequire } from 'node:module';
+import { MongoClient } from 'mongodb';
 
-require('dotenv').config();
-const { MongoClient } = require('mongodb');
+const require = createRequire(import.meta.url);
 
 const API = `http://localhost:${process.env.PORT || 5000}`;
 const SITE = 'http://localhost:3000';

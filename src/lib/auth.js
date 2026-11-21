@@ -1,5 +1,5 @@
-const { getDb } = require('../config/db');
-const env = require('../config/env');
+import { getDb } from '../config/db.js';
+import env from '../config/env.js';
 
 let _auth = null;
 
@@ -120,4 +120,4 @@ async function getAuth() {
   return _auth;
 }
 
-module.exports = { getAuth };
+export { getAuth };

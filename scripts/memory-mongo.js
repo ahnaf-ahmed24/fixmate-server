@@ -1,4 +1,4 @@
-const { MongoMemoryServer } = require("mongodb-memory-server");
+import { MongoMemoryServer } from "mongodb-memory-server";
 
 (async () => {
   const mongod = await MongoMemoryServer.create({ instance: { port: 27017, ip: "127.0.0.1" } });

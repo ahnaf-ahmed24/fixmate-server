@@ -1,5 +1,5 @@
-const { collections, userFilter } = require('../utils/helpers');
-const env = require('../config/env');
+import { collections, userFilter } from '../utils/helpers.js';
+import env from '../config/env.js';
 
 let jose = null;
 let jwks = null;
@@ -77,4 +77,4 @@ const verifyCustomer = requireRole('customer');
 const verifyTechnician = requireRole('technician');
 const verifyAdmin = requireRole('admin');
 
-module.exports = { verifyToken, verifyCustomer, verifyTechnician, verifyAdmin };
+export { verifyToken, verifyCustomer, verifyTechnician, verifyAdmin };

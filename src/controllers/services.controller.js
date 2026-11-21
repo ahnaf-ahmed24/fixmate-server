@@ -1,5 +1,5 @@
-const { oid, escapeRegex, CATEGORIES, SERVICE_MODES, ok, fail, collections, startOfToday } = require('../utils/helpers');
-const { ApiError } = require('../middlewares/error.middleware');
+import { oid, escapeRegex, CATEGORIES, SERVICE_MODES, ok, fail, collections, startOfToday } from '../utils/helpers.js';
+import { ApiError } from '../middlewares/error.middleware.js';
 
 
 async function listServices(req, res) {
@@ -205,7 +205,7 @@ function validateServiceBody(body, { requireImage = true } = {}) {
   return errors;
 }
 
-module.exports = {
+export {
   listServices,
   featuredServices,
   getServiceById,

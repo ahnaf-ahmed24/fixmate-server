@@ -1,6 +1,6 @@
 // ImgBB is the image host for service photos & avatars — the API key never leaves the server.
-const env = require('../config/env');
-const { ok, fail } = require('../utils/helpers');
+import env from '../config/env.js';
+import { ok, fail } from '../utils/helpers.js';
 
 const MAX_BYTES = 10 * 1024 * 1024; // 10MB (ImgBB's own limit is 32MB)
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'];
@@ -59,4 +59,4 @@ async function uploadImage(req, res) {
   });
 }
 
-module.exports = { uploadImage };
+export { uploadImage };

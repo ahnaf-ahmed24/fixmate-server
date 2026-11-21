@@ -1,7 +1,9 @@
+import { spawn } from 'node:child_process';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
-const { spawn } = require('child_process');
-const { MongoMemoryServer } = require('mongodb-memory-server');
-const path = require('path');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const PORT = 5057;
 const BASE = `http://127.0.0.1:${PORT}`;

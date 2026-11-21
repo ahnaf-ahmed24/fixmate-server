@@ -22,4 +22,4 @@ class ApiError extends Error {
   }
 }
 
-module.exports = { asyncHandler, notFound, errorHandler, ApiError };
+export { asyncHandler, notFound, errorHandler, ApiError };

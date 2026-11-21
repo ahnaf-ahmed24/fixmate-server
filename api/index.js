@@ -1,33 +1,6 @@
-const { connectDb } = require('../src/config/db');
-const env = require('../src/config/env');
+import handler from '../src/handler.js';
 
-let app = null;
-let initPromise = null;
-
-async function getApp() {
-  if (app) return app;
-  if (initPromise) return initPromise;
-
-  initPromise = (async () => {
-    env.assertSecrets();
-    await connectDb();
-    const { createApp } = require('../src/app');
-    app = await createApp();
-    return app;
-  })().catch((err) => {
-    initPromise = null;
-    throw err;
-  });
-
-  return initPromise;
-}
-
-module.exports = async (req, res) => {
-  try {
-    const a = await getApp();
-    return a(req, res);
-  } catch (err) {
-    console.error('[api] error:', err.message);
-    return res.status(500).json({ error: err.message });
-  }
-};
+// Vercel function entry for the rewrite target in vercel.json ("/(.*)" → "/api/index").
+// The real bootstrap lives in src/handler.js so it stays identical to the
+// auto-detected root entry in src/app.js.
+export default handler;

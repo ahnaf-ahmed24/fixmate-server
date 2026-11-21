@@ -1,21 +1,28 @@
-require('dotenv').config();
+import 'dotenv/config';
 
-const env = require('./config/env');
-const { connectDb } = require('./config/db');
-const { createApp } = require('./app');
+import env from './config/env.js';
+import { connectDb } from './config/db.js';
+import { createApp } from './app.js';
 
 /** Local / long-running entry point. On Vercel use api/index.js instead. */
 async function main() {
   env.assertSecrets();
   await connectDb();
 
-  const app = createApp();
+  const app = await createApp();
   app.listen(env.PORT, () => {
     console.log(`[server] FixMate API running on ${env.BETTER_AUTH_URL} (${env.NODE_ENV})`);
   });
 }
 
-main().catch((err) => {
-  console.error('[server] failed to start:', err);
-  process.exit(1);
-});
+// Vercel falls back to package.json's "main" when no other entry file matches,
+// so this module must expose a default export too. The listener is only started
+// when running locally — never when the file is imported inside a function.
+export { default } from './handler.js';
+
+if (process.env.VERCEL !== '1') {
+  main().catch((err) => {
+    console.error('[server] failed to start:', err);
+    process.exit(1);
+  });
+}

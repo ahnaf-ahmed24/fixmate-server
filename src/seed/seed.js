@@ -1,7 +1,7 @@
+import 'dotenv/config';
 
-require('dotenv').config();
-const { connectDb, collections, disconnectDb, ensureIndexes } = require('../config/db');
-const { getAuth } = require('../lib/auth');
+import { connectDb, collections, disconnectDb, ensureIndexes } from '../config/db.js';
+import { getAuth } from '../lib/auth.js';
 
 const ADMIN = { name: 'FixMate Admin', email: 'admin@fixmate.com', password: 'Admin@123' };
 const TECHNICIANS = [

@@ -1,4 +1,4 @@
-const { ok, fail, collections, userFilter } = require('../utils/helpers');
+import { ok, fail, collections, userFilter } from '../utils/helpers.js';
 
 
 async function updateProfile(req, res) {
@@ -39,4 +39,4 @@ async function getMe(req, res) {
   ok(res, { data: user });
 }
 
-module.exports = { updateProfile, getMe };
+export { updateProfile, getMe };

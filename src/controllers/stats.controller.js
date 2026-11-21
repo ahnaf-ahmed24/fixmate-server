@@ -1,4 +1,4 @@
-const { ok, collections, ACTIVE_STATUSES } = require('../utils/helpers');
+import { ok, collections, ACTIVE_STATUSES } from '../utils/helpers.js';
 
 
 async function customerStats(req, res) {
@@ -55,4 +55,4 @@ async function technicianStats(req, res) {
   });
 }
 
-module.exports = { customerStats, technicianStats };
+export { customerStats, technicianStats };
